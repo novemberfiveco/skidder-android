@@ -1,0 +1,64 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
+apply plugin: 'kotlinx-serialization'
+
+android {
+    compileSdkVersion 30
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 30
+    }
+    
+    buildTypes {
+        beta { } //covert: the Gradle plugin requires that the buildtypes of the library match those of the main project
+    }
+}
+
+ext {
+    powermockVersion = '1.6.6'
+    robolectricVersion = '3.1.2'
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(path: ':skidder')
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1"
+
+    implementation platform('com.google.firebase:firebase-bom:28.1.0')
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+}
+
+ext {
+    libraryGroupId = 'co.novemberfive.android.skidder'
+    libraryName = 'Skidder - Firebase Crashlytics service'
+    libraryDescription = 'A Firebase Crashlytics implementation for ILoggingService'
+}
+
+/**
+ * Publishing
+ */
+// Because the components are created only during the afterEvaluate phase, you must
+// configure your publications using the afterEvaluate() lifecycle method.
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
+
+                groupId = project.libraryGroupId
+                artifactId = 'crashlytics'
+                version = project.parent.libraryVersion
+            }
+        }
+    }
+}
+
+apply from: 'publishing/novemberfive.gradle'

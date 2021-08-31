@@ -1,0 +1,41 @@
+buildscript {
+    ext {
+        kotlinVersion = '1.4.32'
+    }
+
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url "s3://novemberfive-maven/releases"
+            authentication { awsIm(AwsImAuthentication) }
+        }
+    }
+
+    dependencies {
+        if (project == rootProject) {
+            // Android plugin for Gradle
+            classpath 'com.android.tools.build:gradle:4.1.3'
+
+            // Kotlin
+            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+            classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
+        }
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+
+ext {
+    libraryVersion = '0.2.1-SNAPSHOT'
+}
